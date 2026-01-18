@@ -1,0 +1,21 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pkl
+*.joblib
+.DS_Store
+.venv/
+*.egg-info/
+dist/
+build/
+
+# Intermediate pipeline outputs (reproducible from code)
+output/cleaned_ds*.csv
+output/all_cleaned.csv
+output/master.csv
+output/master_imputed.csv
+output/imputation_comparison.csv
+output/classification_results.csv
+output/lodo_results.csv
+output/regression_results.csv
+output/pretrain_finetune_results.csv
