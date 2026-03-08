@@ -26,17 +26,17 @@
   <img src="figures/key_findings.png" alt="Key Findings" width="100%">
 </p>
 
-## The Problem
+## Motivation
 
-Mental health surveys measure the same construct with wildly different instruments: GAD-7 (0-21), PHQ-9 (0-27), Likert scales (1-5), binary yes/no. Naively rescaling all scores to a common range introduces confounders: models learn to predict *which dataset a sample came from* rather than actual mental health risk.
+Mental health surveys measure the same construct with different instruments: GAD-7 (0-21), PHQ-9 (0-27), Likert scales (1-5), binary yes/no. Naively rescaling all scores to a common range introduces confounders, where models learn to predict *which dataset a sample came from* rather than actual mental health risk.
 
-This project tackles the harmonization problem with **theoretically grounded normalization**, then rigorously validates whether the resulting model generalizes across datasets or merely memorizes dataset identity.
+This project addresses the harmonization problem with **theoretically grounded normalization**, then validates whether the resulting model generalizes across datasets or merely memorizes dataset identity.
 
 ## Key Findings
 
 - **Source ablation delta of +0.004** confirms our target construction eliminates dataset-identity confounding
 - **LODO validation** (train on 7, test on the 8th) exposes a generalization gap: standard CV F1 = 0.714 vs LODO mean F1 = 0.272
-- The gap traces to **self-selection bias**: real survey respondents over-report MH concerns (32% High Risk) vs synthetic data (4% High Risk)
+- The gap traces to **self-selection bias**: individuals with MH concerns are overrepresented in voluntary real surveys (32% High Risk vs 4% in synthetic data)
 - **Reweighting real samples 10x** recovers High Risk F1 from 0.04 to 0.66
 - **7 features remain stable** across all 8 LODO folds: screen time, late-night usage, social comparison, sleep duration, age, gender
 
@@ -93,7 +93,7 @@ This project tackles the harmonization problem with **theoretically grounded nor
   <img src="figures/model_comparison.png" alt="Model Comparison" width="85%">
 </p>
 
-Random Forest achieves the best F1 macro (0.714) by balancing minority class recall. XGBoost leads on accuracy (0.818) but under-detects High Risk. Stacking underperforms because the base models (RF + XGB) are too similar for the LR meta-learner to exploit.
+Random Forest achieves the best F1 macro (0.714) due to better minority class recall. XGBoost leads on accuracy (0.818) but under-detects High Risk. Stacking underperforms as the base models (RF + XGB) are too correlated for the meta-learner to gain from.
 
 ### The Generalization Gap
 
@@ -136,17 +136,19 @@ Run the pipeline sequentially:
 
 ```bash
 cd pipeline
-python 01_clean_and_target.py    # Clean + harmonize → output/all_cleaned.csv
-python 02_merge.py               # Align features    → output/master.csv
-python 03_eda.py                 # EDA charts        → output/eda_*.png
-python 04_imputation_fe.py       # MICE imputation   → output/master_imputed.csv
-python 05_modeling.py            # Train + LODO      → output/*.csv, *.pkl
-python 06_evaluation.py          # SHAP + eval       → output/eval_*.png
-python 06b_extended_analysis.py  # Real vs synthetic  → output/eval_*.png
-python 06c_pretrain_finetune.py  # Domain adaptation  → output/eval_*.png
-python 06d_deepdive_shift.py     # Shift diagnosis    → output/eval_*.png
-python 06e_shap_with_source.py   # Confounder check   → output/eval_*.png
+python 01_clean_and_target.py
+python 02_merge.py
+python 03_eda.py
+python 04_imputation_fe.py
+python 05_modeling.py
+python 06_evaluation.py
+python 06b_extended_analysis.py
+python 06c_pretrain_finetune.py
+python 06d_deepdive_shift.py
+python 06e_shap_with_source.py
 ```
+
+All outputs (figures, CSVs, trained models) are written to `output/`.
 
 <details>
 <summary><b>Requirements</b></summary>
@@ -160,6 +162,19 @@ Full list in [`requirements.txt`](requirements.txt).
 ## Report
 
 The full 6-page technical report with methodology details, justifications, and additional analyses is available at [`report.pdf`](report.pdf).
+
+## Citation
+
+If you use this work, please cite:
+
+```bibtex
+@misc{li2026crosssurvey,
+  title   = {Cross-Survey Mental Health Risk Prediction},
+  author  = {Li, Yuxiang},
+  year    = {2026},
+  url     = {https://github.com/Liyux3/cross-survey-mental-health-prediction}
+}
+```
 
 ## License
 
