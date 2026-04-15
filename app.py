@@ -8,7 +8,7 @@ import pandas as pd
 import joblib
 import os
 
-MODEL_PATH = os.path.join('output', 'best_classifier.pkl')
+MODEL_PATH = os.path.join('output', 'model_compact.pkl')
 LE_PATH = os.path.join('output', 'label_encoder.pkl')
 
 FEATURE_COLS = [

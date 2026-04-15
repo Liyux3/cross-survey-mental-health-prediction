@@ -1,7 +1,8 @@
 __pycache__/
 *.pyc
 *.pyo
-*.pkl
+output/best_classifier.pkl
+output/best_tree_classifier.pkl
 *.joblib
 .DS_Store
 .venv/
