@@ -8,6 +8,7 @@
     <a href="#key-findings">Findings</a> &middot;
     <a href="#pipeline-architecture">Pipeline</a> &middot;
     <a href="#results">Results</a> &middot;
+    <a href="#interactive-demo">Demo</a> &middot;
     <a href="#quick-start">Quick Start</a> &middot;
     <a href="report.pdf">Report</a>
   </p>
@@ -123,6 +124,17 @@ When dataset identity is added as a feature, it ranks 5th (SHAP = 0.030), confir
 
 **Feature stability across LODO folds:** 7 features appear in the top-10 importance across all 8 folds, suggesting the model captures genuine behavioral-MH associations rather than dataset-specific artifacts.
 </details>
+
+## Interactive Demo
+
+A Streamlit app lets you adjust social media usage parameters and get a real-time risk prediction with class probabilities and feature importance.
+
+```bash
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+The app loads the trained Random Forest model and shows predicted risk level (Low / Moderate / High), confidence scores, and the top contributing factors for each prediction.
 
 ## Quick Start
 
