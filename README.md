@@ -127,7 +127,9 @@ When dataset identity is added as a feature, it ranks 5th (SHAP = 0.030), confir
 
 ## Interactive Demo
 
-A Streamlit app lets you adjust social media usage parameters and get a real-time risk prediction with class probabilities and feature importance.
+**[Try it online](https://cross-survey-mental-health-prediction.streamlit.app/)** — adjust social media usage parameters and get a real-time risk prediction with class probabilities and feature importance.
+
+Or run locally:
 
 ```bash
 pip install -r requirements.txt
