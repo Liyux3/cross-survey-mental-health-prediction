@@ -5,10 +5,10 @@
     with cross-dataset validation exposing the real-synthetic generalization gap.
   </p>
   <p align="center">
+    <a href="https://cross-survey-mental-health-prediction.streamlit.app/">Try it online</a> &middot;
     <a href="#key-findings">Findings</a> &middot;
     <a href="#pipeline-architecture">Pipeline</a> &middot;
     <a href="#results">Results</a> &middot;
-    <a href="#interactive-demo">Demo</a> &middot;
     <a href="#quick-start">Quick Start</a> &middot;
     <a href="report.pdf">Report</a>
   </p>
@@ -31,15 +31,15 @@
 
 Mental health surveys measure the same construct with different instruments: GAD-7 (0-21), PHQ-9 (0-27), Likert scales (1-5), binary yes/no. Naively rescaling all scores to a common range introduces confounders, where models learn to predict *which dataset a sample came from* rather than actual mental health risk.
 
-This project addresses the harmonization problem with **theoretically grounded normalization**, then validates whether the resulting model generalizes across datasets or merely memorizes dataset identity.
+This project addresses the harmonization problem with theoretically grounded normalization, then validates whether the resulting model generalizes across datasets or merely memorizes dataset identity.
 
 ## Key Findings
 
-- **Source ablation delta of +0.004** confirms our target construction eliminates dataset-identity confounding
-- **LODO validation** (train on 7, test on the 8th) exposes a generalization gap: standard CV F1 = 0.714 vs LODO mean F1 = 0.272
-- The gap traces to **self-selection bias**: individuals with MH concerns are overrepresented in voluntary real surveys (32% High Risk vs 4% in synthetic data)
-- **Reweighting real samples 10x** recovers High Risk F1 from 0.04 to 0.66
-- **7 features remain stable** across all 8 LODO folds: screen time, late-night usage, social comparison, sleep duration, age, gender
+- Source ablation delta of +0.004 confirms our target construction eliminates dataset-identity confounding
+- LODO validation (train on 7, test on the 8th) exposes a generalization gap: standard CV F1 = 0.714 vs LODO mean F1 = 0.272
+- The gap traces to self-selection bias: individuals with MH concerns are overrepresented in voluntary real surveys (32% High Risk vs 4% in synthetic data)
+- Reweighting real samples 10x recovers High Risk F1 from 0.04 to 0.66
+- 7 features remain stable across all 8 LODO folds: screen time, late-night usage, social comparison, sleep duration, age, gender
 
 ## Dataset Landscape
 
@@ -47,7 +47,7 @@ This project addresses the harmonization problem with **theoretically grounded n
   <img src="figures/dataset_landscape.png" alt="Dataset Landscape" width="85%">
 </p>
 
-8 Kaggle survey datasets (3 real, 5 synthetic), totaling **11,858 samples**. Each uses different MH instruments, from standardized clinical scales (GAD-7, PHQ-9) to ad-hoc Likert items. After harmonization: **30 features**, **3-class target** (Low / Moderate / High Risk).
+8 Kaggle survey datasets (3 real, 5 synthetic), totaling 11,858 samples. Each uses different MH instruments, from standardized clinical scales (GAD-7, PHQ-9) to ad-hoc Likert items. After harmonization: 30 features, 3-class target (Low / Moderate / High Risk).
 
 <details>
 <summary><b>Dataset Details</b></summary>
@@ -64,7 +64,7 @@ This project addresses the harmonization problem with **theoretically grounded n
 | 7 | Student survey | 705 | MH score (4-9) | Real |
 | 8 | Synthetic (E. BULUT) | 103 | Dominant emotion (6-cat) | Synth |
 
-**Target construction:** Per-dataset MH variables are normalized to [0, 1] using theoretical instrument ranges (not observed min-max), then averaged into a composite score. Subjective psychological states (anxiety, depression, stress) become the target; observable behaviors (screen time, sleep duration) become features.
+Target construction: per-dataset MH variables are normalized to [0, 1] using theoretical instrument ranges (not observed min-max), then averaged into a composite score. Subjective psychological states (anxiety, depression, stress) become the target; observable behaviors (screen time, sleep duration) become features.
 </details>
 
 ## Pipeline Architecture
@@ -78,7 +78,7 @@ This project addresses the harmonization problem with **theoretically grounded n
 | 1 | `01_clean_and_target.py` | Per-dataset cleaning, column standardization, composite target construction |
 | 2 | `02_merge.py` | Cross-dataset feature alignment, sanity checks |
 | 3 | `03_eda.py` | Distribution analysis, correlation mapping, missingness profiling |
-| 4 | `04_imputation_fe.py` | Imputation comparison (Median vs KNN vs **MICE**), interaction features |
+| 4 | `04_imputation_fe.py` | Imputation comparison (Median vs KNN vs MICE), interaction features |
 | 5 | `05_modeling.py` | 6-model classification, LODO validation, regression baseline |
 | 6a | `06_evaluation.py` | SHAP analysis, confusion matrices, feature importance |
 | 6b | `06b_extended_analysis.py` | Real vs synthetic split, source ablation, feature consistency |
@@ -110,24 +110,24 @@ Standard 5-fold CV reports F1 = 0.714. LODO reveals the model cannot generalize 
   <img src="figures/shift_and_adaptation.png" alt="Shift and Adaptation" width="100%">
 </p>
 
-**Root cause:** Self-selection bias in voluntary MH surveys. Respondents with mental health concerns are overrepresented in real data, creating a target distribution mismatch (KS = 0.456). Synthetic generators approximate general population distributions instead.
+Root cause: self-selection bias in voluntary MH surveys. Respondents with mental health concerns are overrepresented in real data, creating a target distribution mismatch (KS = 0.456). Synthetic generators approximate general population distributions instead.
 
-**Fix:** Reweighting real samples 10x during training recovers High Risk detection (F1: 0.04 to 0.66) with minimal trade-off on other classes. Warm-start transfer preserves feature ranking (Spearman rho = 0.736) but does not improve calibration.
+Reweighting real samples 10x during training recovers High Risk detection (F1: 0.04 to 0.66) with minimal trade-off on other classes. Warm-start transfer preserves feature ranking (Spearman rho = 0.736) but does not improve calibration.
 
 <details>
 <summary><b>More Results: Feature Importance and Stability</b></summary>
 <br>
 
-**SHAP Top 5:** late-night usage (0.100), screen_time x late_night interaction (0.089), social comparison (0.059), daily screen time (0.053), sleep duration (0.022).
+SHAP top 5: late-night usage (0.100), screen_time x late_night interaction (0.089), social comparison (0.059), daily screen time (0.053), sleep duration (0.022).
 
 When dataset identity is added as a feature, it ranks 5th (SHAP = 0.030), confirming it carries some signal but is not dominant. The source ablation delta (+0.004 F1) corroborates this: our target construction successfully prevents the model from relying on dataset identity.
 
-**Feature stability across LODO folds:** 7 features appear in the top-10 importance across all 8 folds, suggesting the model captures genuine behavioral-MH associations rather than dataset-specific artifacts.
+Feature stability across LODO folds: 7 features appear in the top-10 importance across all 8 folds, suggesting the model captures genuine behavioral-MH associations rather than dataset-specific artifacts.
 </details>
 
 ## Interactive Demo
 
-**[Try it online](https://cross-survey-mental-health-prediction.streamlit.app/)** — adjust social media usage parameters and get a real-time risk prediction with class probabilities and feature importance.
+[Try it online](https://cross-survey-mental-health-prediction.streamlit.app/), adjust social media usage parameters and get a real-time risk prediction with class probabilities and feature importance.
 
 Or run locally:
 
