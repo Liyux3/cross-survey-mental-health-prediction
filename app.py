@@ -117,10 +117,11 @@ def main():
     col1, col2 = st.columns([1, 1], gap='large')
 
     with col1:
-        st.subheader('Your Profile')
+        st.subheader('About You')
 
         age = st.slider('Age', 13, 65, 22)
         gender = st.selectbox('Gender', ['Male', 'Female', 'Other'])
+        sleep = st.slider('Sleep duration (hours)', 3.0, 12.0, 7.0, 0.5)
 
         st.subheader('Social Media Usage')
 
@@ -132,10 +133,8 @@ def main():
         platform = st.selectbox('Primary platform', PLATFORMS)
         content_type = st.selectbox('Dominant content type', CONTENT_TYPES)
         activity = st.radio('Usage style', ['Active', 'Passive'],
-                            help='Active = posting, commenting. Passive = scrolling, watching.')
-
-        st.subheader('Health')
-        sleep = st.slider('Sleep duration (hours)', 3.0, 12.0, 7.0, 0.5)
+                            help='Active = posting, commenting. Passive = scrolling, watching.',
+                            horizontal=True)
 
     X = build_feature_vector(age, screen_time, sleep, social_comp, late_night,
                              gender, platform, content_type, activity)
