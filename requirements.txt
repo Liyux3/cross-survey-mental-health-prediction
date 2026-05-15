@@ -8,4 +8,5 @@ seaborn
 scipy
 joblib
 openpyxl
+pyyaml
 streamlit

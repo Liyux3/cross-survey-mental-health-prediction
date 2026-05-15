@@ -138,6 +138,22 @@ streamlit run app.py
 
 The app loads the trained Random Forest model and shows predicted risk level (Low / Moderate / High), confidence scores, and the top contributing factors for each prediction.
 
+## Adding New Datasets
+
+The pipeline supports incorporating new survey datasets via a YAML config file, without modifying any existing code.
+
+1. Place your data file in `data/`
+2. Copy `pipeline/dataset_config_template.yaml`, fill in your column mappings and MH target variables with their theoretical ranges
+3. Run the adapter:
+
+```bash
+cd pipeline
+python add_dataset.py my_survey.yaml              # clean + merge
+python add_dataset.py my_survey.yaml --retrain     # also retrain model
+```
+
+The config handles the most common survey formats automatically. For surveys with unusual structures (categorical age bins, multi-select platforms, emotion-to-score mappings), you may need a custom cleaning function instead.
+
 ## Quick Start
 
 ```bash

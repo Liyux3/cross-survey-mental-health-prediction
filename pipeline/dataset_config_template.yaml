@@ -1,0 +1,51 @@
+# Template for adding a new survey dataset to the pipeline.
+# Copy this file, rename it (e.g., my_survey.yaml), and fill in the fields.
+# Then run: python add_dataset.py my_survey.yaml
+
+# Path to the data file (relative to data/ directory)
+file: my_survey.csv
+# or: file: my_survey.xlsx
+
+# Dataset identifier (must be unique, e.g., ds9, ds10)
+id: ds9
+
+# Data type
+type: real  # or: synthetic
+
+# Column mappings
+# Map your column names to the standard feature names.
+# Only include columns that exist in your data.
+# All columns are optional except at least one MH target variable.
+columns:
+  age: Age                          # numeric or categorical (see age_mapping below)
+  gender: Gender                    # will be normalized to male/female/other
+  daily_screen_time_hours: Screen_Time_Hours  # numeric, in hours
+  sleep_duration_hours: Sleep_Hours           # numeric, in hours
+  primary_platform: Platform                  # will be normalized
+  social_comparison: Social_Comparison        # numeric, 0-1 scale
+  late_night_usage: Late_Night_Use            # numeric
+
+# Optional: if age column is categorical, provide a mapping to numeric midpoints
+# age_mapping:
+#   "18-25": 21.5
+#   "26-35": 30.5
+
+# Optional: if screen time is in minutes instead of hours
+# screen_time_unit: minutes
+
+# Mental health target variables
+# Each entry needs: column name, range [min, max], and direction (higher_is_worse or higher_is_better)
+# These will be normalized to [0, 1] where 1 = worst MH, then averaged into the composite.
+mh_targets:
+  - column: Anxiety_Score
+    range: [0, 21]          # theoretical instrument range
+    direction: higher_is_worse
+
+  - column: Depression_Score
+    range: [0, 27]
+    direction: higher_is_worse
+
+  # Example of a reversed scale (higher = better mental health)
+  # - column: Wellbeing_Score
+  #   range: [1, 10]
+  #   direction: higher_is_better
